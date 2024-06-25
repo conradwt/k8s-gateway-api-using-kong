@@ -106,15 +106,13 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     nginx-service   LoadBalancer   10.106.207.172   194.1.2.100   80:32000/TCP   17h
     ```
 
-12. expected output
-
-    input:
+12. test connectivity to `nginx-service` endpoint
 
     ```zsh
     curl 194.1.2.100
     ```
 
-    output:
+13. expected output
 
     ```text
     <!DOCTYPE html>
@@ -142,26 +140,26 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     </html>
     ```
 
-13. install the Gateway API CRDs
+14. install the Gateway API CRDs
 
     ```zsh
     kubectl apply -f gateway/8s-gateway-api-v1.1.0.yaml
     ```
 
-14. create the Gateway and GatewayClass resources
+15. create the Gateway and GatewayClass resources
 
     ```zsh
     kubectl apply -f gateway/gateway.yaml
     ```
 
-15. install Kong
+16. install Kong
 
     ```zsh
     helm repo add kong https://charts.konghq.com
     helm repo update
     ```
 
-16. install Kong Ingress Controller and Kong Gateway
+17. install Kong Ingress Controller and Kong Gateway
 
     ```zsh
     helm install kong kong/ingress -n kong --create-namespace
