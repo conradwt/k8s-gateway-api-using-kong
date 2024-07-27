@@ -22,7 +22,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 2.  install MetalLB
 
     ```zsh
-    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
     ```
 
 3.  clone github repository
@@ -68,6 +68,8 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
       addresses:
         - 194.1.2.100-194.1.2.110
     ```
+
+    Note: The IP range needs to be in the same range as the K8s cluster, `gateway-api-kong`.
 
 7.  apply the address pool manifest
 
@@ -143,7 +145,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 14. install the Gateway API CRDs
 
     ```zsh
-    kubectl apply -f gateway/8s-gateway-api-v1.1.0.yaml
+    kubectl apply -f gateway/k8s-gateway-api-v1.1.0.yaml
     ```
 
 15. create the Gateway and GatewayClass resources
