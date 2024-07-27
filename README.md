@@ -13,28 +13,28 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
 ## Tutorial Installation
 
-1.  create Minikube cluster
-
-    ```zsh
-    minikube start -p gateway-api-kong
-    ```
-
-2.  install MetalLB
-
-    ```zsh
-    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
-    ```
-
-3.  clone github repository
+1.  clone github repository
 
     ```zsh
     git clone https://github.com/conradwt/k8s-gateway-api-using-kong.git
     ```
 
-4.  change directory
+2.  change directory
 
     ```zsh
     cd k8s-gateway-api-using-kong
+    ```
+
+3.  create Minikube cluster
+
+    ```zsh
+    minikube start -p gateway-api-kong
+    ```
+
+4.  install MetalLB
+
+    ```zsh
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
     ```
 
 5.  locate the subnet
