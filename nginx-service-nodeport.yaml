@@ -7,9 +7,9 @@ spec:
     app: nginx
   ports:
     - protocol: TCP
-      # container
-      targetPort: 80
+      nodePort: 30492
       # service
       port: 80
-      nodePort: 30492
+      # container
+      targetPort: 80
   type: NodePort
