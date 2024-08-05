@@ -43,8 +43,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     docker network inspect gateway-api-kong | jq '.[0].IPAM.Config[0]["Subnet"]'
     ```
 
-    Note: This grabs the Subnet value from the first config block and it should
-    look something like the following:
+    The results should look something like the following:
 
     ```json
     "194.1.2.0/24",
@@ -56,7 +55,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     194.1.2.100-194.1.2.110
     ```
 
-6.  update the `metallb-address-pool.yaml`
+6.  update the `01-metallb-address-pool.yaml`
 
     ```yaml
     apiVersion: metallb.io/v1beta1
@@ -74,25 +73,25 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 7.  apply the address pool manifest
 
     ```zsh
-    kubectl apply -f metallb-address-pool.yaml
+    kubectl apply -f 01-metallb-address-pool.yaml
     ```
 
 8.  apply Layer 2 advertisement manifest
 
     ```zsh
-    kubectl apply -f metallb-advertise.yaml
+    kubectl apply -f 02-metallb-advertise.yaml
     ```
 
 9.  apply deployment manifest
 
     ```zsh
-    kubectl apply -f nginx-deployment.yaml
+    kubectl apply -f 03-nginx-deployment.yaml
     ```
 
 10. apply service manifest
 
     ```zsh
-    kubectl apply -f nginx-service-loadbalancer.yaml
+    kubectl apply -f 04-nginx-service-loadbalancer.yaml
     ```
 
 11. check that your service has an IP address
@@ -101,20 +100,20 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     kubectl get svc nginx-service
     ```
 
-    example output
+    The results should look something like the following:
 
     ```text
     NAME            TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)        AGE
     nginx-service   LoadBalancer   10.106.207.172   194.1.2.100   80:32000/TCP   17h
     ```
 
-12. test connectivity to `nginx-service` endpoint
+12. test connectivity to `nginx-service` endpoint via external IP address
 
     ```zsh
     curl 194.1.2.100
     ```
 
-13. expected output
+    The results should look something like the following:
 
     ```text
     <!DOCTYPE html>
@@ -142,27 +141,100 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     </html>
     ```
 
-14. install the Gateway API CRDs
+13. install the Gateway API CRDs
 
     ```zsh
-    kubectl apply -f gateway/k8s-gateway-api-v1.1.0.yaml
+    kubectl apply -f 05-k8s-gateway-api-v1.1.0.yaml
     ```
 
-15. create the Gateway and GatewayClass resources
+14. create the Gateway and GatewayClass resources
 
     ```zsh
-    kubectl apply -f gateway/gateway.yaml
+    kubectl apply -f 06-gateway.yaml
     ```
 
-16. install Kong
+15. install Kong
 
     ```zsh
     helm repo add kong https://charts.konghq.com
     helm repo update
     ```
 
-17. install Kong Ingress Controller and Kong Gateway
+16. install Kong Ingress Controller and Kong Gateway
 
     ```zsh
     helm install kong kong/ingress -n kong --create-namespace
     ```
+
+17. populate $PROXY_IP for future commands:
+
+    ```zsh
+    export PROXY_IP=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    echo $PROXY_IP
+    ```
+
+18. verify the proxy IP
+
+    ```zsh
+    curl -i $PROXY_IP
+    ```
+
+    The results should look something like the following:
+
+    ```text
+    HTTP/1.1 404 Not Found
+    Content-Type: application/json; charset=utf-8
+    Connection: keep-alive
+    Content-Length: 48
+    X-Kong-Response-Latency: 0
+    Server: kong/3.0.0
+
+    {"message":"no Route matched with those values"}
+    ```
+
+19. deploy the X service
+
+    # TODO rewrite for our defined service.
+
+    ```zsh
+    kubectl apply -f 07-sample-service.yaml
+    ```
+
+20. create HTTPRoute for our deployed service
+
+    # TODO rewrite for our defined service.
+
+    ```zsh
+    kubectl apply -f 08-sample-httproute.yaml
+    ```
+
+21. test the routing rule
+
+    # TODO rewrite for our defined service.
+
+    ```zsh
+    curl -i $PROXY_IP/echo
+    ```
+
+    The results should look like this:
+
+    ```text
+    HTTP/1.1 200 OK
+    Content-Type: text/plain; charset=utf-8
+    Content-Length: 140
+    Connection: keep-alive
+    Date: Fri, 21 Apr 2023 12:24:55 GMT
+    X-Kong-Upstream-Latency: 0
+    X-Kong-Proxy-Latency: 1
+    Via: kong/3.2.2
+
+    Welcome, you are connected to node docker-desktop.
+    Running on Pod echo-7f87468b8c-tzzv6.
+    In namespace default.
+    With IP address 10.1.0.237.
+    ...
+    ```
+
+## References
+
+- https://docs.konghq.com/kubernetes-ingress-controller/3.2.x/get-started
