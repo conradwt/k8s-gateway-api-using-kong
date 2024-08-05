@@ -150,7 +150,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 14. install the Gateway API CRDs
 
     ```zsh
-    kubectl apply -f 05-k8s-gateway-api-v1.1.0.yaml
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
     ```
 
 15. create the Gateway and GatewayClass resources
