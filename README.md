@@ -55,7 +55,13 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     194.1.2.100-194.1.2.110
     ```
 
-6.  update the `01-metallb-address-pool.yaml`
+6.  create the `01-metallb-address-pool.yaml`
+
+    ```zsh
+    cp 01-metallb-address-pool.yaml.example 01-metallb-address-pool.yaml
+    ```
+
+7.  update the `01-metallb-address-pool.yaml`
 
     ```yaml
     apiVersion: metallb.io/v1beta1
@@ -70,31 +76,31 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
     Note: The IP range needs to be in the same range as the K8s cluster, `gateway-api-kong`.
 
-7.  apply the address pool manifest
+8.  apply the address pool manifest
 
     ```zsh
     kubectl apply -f 01-metallb-address-pool.yaml
     ```
 
-8.  apply Layer 2 advertisement manifest
+9.  apply Layer 2 advertisement manifest
 
     ```zsh
     kubectl apply -f 02-metallb-advertise.yaml
     ```
 
-9.  apply deployment manifest
+10. apply deployment manifest
 
     ```zsh
     kubectl apply -f 03-nginx-deployment.yaml
     ```
 
-10. apply service manifest
+11. apply service manifest
 
     ```zsh
     kubectl apply -f 04-nginx-service-loadbalancer.yaml
     ```
 
-11. check that your service has an IP address
+12. check that your service has an IP address
 
     ```zsh
     kubectl get svc nginx-service
@@ -107,7 +113,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     nginx-service   LoadBalancer   10.106.207.172   194.1.2.100   80:32000/TCP   17h
     ```
 
-12. test connectivity to `nginx-service` endpoint via external IP address
+13. test connectivity to `nginx-service` endpoint via external IP address
 
     ```zsh
     curl 194.1.2.100
@@ -141,39 +147,39 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     </html>
     ```
 
-13. install the Gateway API CRDs
+14. install the Gateway API CRDs
 
     ```zsh
     kubectl apply -f 05-k8s-gateway-api-v1.1.0.yaml
     ```
 
-14. create the Gateway and GatewayClass resources
+15. create the Gateway and GatewayClass resources
 
     ```zsh
     kubectl apply -f 06-gateway.yaml
     ```
 
-15. install Kong
+16. install Kong
 
     ```zsh
     helm repo add kong https://charts.konghq.com
     helm repo update
     ```
 
-16. install Kong Ingress Controller and Kong Gateway
+17. install Kong Ingress Controller and Kong Gateway
 
     ```zsh
     helm install kong kong/ingress -n kong --create-namespace
     ```
 
-17. populate $PROXY_IP for future commands:
+18. populate $PROXY_IP for future commands:
 
     ```zsh
     export PROXY_IP=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     echo $PROXY_IP
     ```
 
-18. verify the proxy IP
+19. verify the proxy IP
 
     ```zsh
     curl -i $PROXY_IP
@@ -192,7 +198,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     {"message":"no Route matched with those values"}
     ```
 
-19. deploy the X service
+20. deploy the X service
 
     # TODO rewrite for our defined service.
 
@@ -200,7 +206,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     kubectl apply -f 07-sample-service.yaml
     ```
 
-20. create HTTPRoute for our deployed service
+21. create HTTPRoute for our deployed service
 
     # TODO rewrite for our defined service.
 
@@ -208,7 +214,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     kubectl apply -f 08-sample-httproute.yaml
     ```
 
-21. test the routing rule
+22. test the routing rule
 
     # TODO rewrite for our defined service.
 

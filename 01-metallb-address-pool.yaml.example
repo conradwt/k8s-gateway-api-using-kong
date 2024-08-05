@@ -5,5 +5,5 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    # replace the following with your IP address range
-    - 192.168.67.100-192.168.67.110
+    # replace the following IP address range
+    - <194.1.2.100-194.1.2.110>
