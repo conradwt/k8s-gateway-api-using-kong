@@ -156,7 +156,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 15. create the Gateway and GatewayClass resources
 
     ```zsh
-    kubectl apply -f 06-gateway.yaml
+    kubectl apply -f 05-gateway.yaml
     ```
 
 16. install Kong
@@ -203,7 +203,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     # TODO rewrite for our defined service.
 
     ```zsh
-    kubectl apply -f 07-sample-service.yaml
+    kubectl apply -f 06-sample-service.yaml
     ```
 
 21. create HTTPRoute for our deployed service
@@ -211,7 +211,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     # TODO rewrite for our defined service.
 
     ```zsh
-    kubectl apply -f 08-sample-httproute.yaml
+    kubectl apply -f 07-sample-httproute.yaml
     ```
 
 22. test the routing rule
@@ -244,3 +244,4 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 ## References
 
 - https://docs.konghq.com/kubernetes-ingress-controller/3.2.x/get-started
+- https://github.com/Kong/go-echo
