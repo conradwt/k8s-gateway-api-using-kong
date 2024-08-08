@@ -1,4 +1,6 @@
-# K8s Gateway API Using Kong
+# K8s Gateway API Using Traefik
+
+The purpose of this example is to provide instructions for running the K8s Gatewey API using Traefik.
 
 ## Software Requirements
 
@@ -6,45 +8,44 @@
 
 - Minikube v1.33.1 or newer
 
-- OrbStack v1.6.2 or newer
+- OrbStack v1.6.4 or newer
 
-Note: This tutorial was updated on macOS 14.5. The below steps doesn't work with Docker Desktop v4.31.1
+Note: This tutorial was updated on macOS 14.6.1. The below steps doesn't work with Docker Desktop v4.31.1
 because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
 ## Tutorial Installation
 
-1.  create Minikube cluster
+1.  clone github repository
 
     ```zsh
-    minikube start -p gateway-api-kong
+    git clone https://github.com/conradwt/k8s-gateway-api-using-traefik.git
     ```
 
-2.  install MetalLB
+2.  change directory
 
     ```zsh
-    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
+    cd k8s-gateway-api-using-traefik
     ```
 
-3.  clone github repository
+3.  create Minikube cluster
 
     ```zsh
-    git clone https://github.com/conradwt/k8s-gateway-api-using-kong.git
+    minikube start -p gateway-api-traefik
     ```
 
-4.  change directory
+4.  install MetalLB
 
     ```zsh
-    cd k8s-gateway-api-using-kong
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
     ```
 
 5.  locate the subnet
 
     ```zsh
-    docker network inspect gateway-api-kong | jq '.[0].IPAM.Config[0]["Subnet"]'
+    docker network inspect gateway-api-traefik | jq '.[0].IPAM.Config[0]["Subnet"]'
     ```
 
-    Note: This grabs the Subnet value from the first config block and it should
-    look something like the following:
+    The results should look something like the following:
 
     ```json
     "194.1.2.0/24",
@@ -56,7 +57,13 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     194.1.2.100-194.1.2.110
     ```
 
-6.  update the `metallb-address-pool.yaml`
+6.  create the `01-metallb-address-pool.yaml`
+
+    ```zsh
+    cp 01-metallb-address-pool.yaml.example 01-metallb-address-pool.yaml
+    ```
+
+7.  update the `01-metallb-address-pool.yaml`
 
     ```yaml
     apiVersion: metallb.io/v1beta1
@@ -69,50 +76,52 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
         - 194.1.2.100-194.1.2.110
     ```
 
-7.  apply the address pool manifest
+    Note: The IP range needs to be in the same range as the K8s cluster, `gateway-api-traefik`.
+
+8.  apply the address pool manifest
 
     ```zsh
-    kubectl apply -f metallb-address-pool.yaml
+    kubectl apply -f 01-metallb-address-pool.yaml
     ```
 
-8.  apply Layer 2 advertisement manifest
+9.  apply Layer 2 advertisement manifest
 
     ```zsh
-    kubectl apply -f metallb-advertise.yaml
+    kubectl apply -f 02-metallb-advertise.yaml
     ```
 
-9.  apply deployment manifest
+10. apply deployment manifest
 
     ```zsh
-    kubectl apply -f nginx-deployment.yaml
+    kubectl apply -f 03-nginx-deployment.yaml
     ```
 
-10. apply service manifest
+11. apply service manifest
 
     ```zsh
-    kubectl apply -f nginx-service-loadbalancer.yaml
+    kubectl apply -f 04-nginx-service-loadbalancer.yaml
     ```
 
-11. check that your service has an IP address
+12. check that your service has an IP address
 
     ```zsh
     kubectl get svc nginx-service
     ```
 
-    example output
+    The results should look something like the following:
 
     ```text
     NAME            TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)        AGE
     nginx-service   LoadBalancer   10.106.207.172   194.1.2.100   80:32000/TCP   17h
     ```
 
-12. test connectivity to `nginx-service` endpoint
+13. test connectivity to `nginx-service` endpoint via external IP address
 
     ```zsh
     curl 194.1.2.100
     ```
 
-13. expected output
+    The results should look something like the following:
 
     ```text
     <!DOCTYPE html>
@@ -143,24 +152,97 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 14. install the Gateway API CRDs
 
     ```zsh
-    kubectl apply -f gateway/8s-gateway-api-v1.1.0.yaml
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/experimental-install.yaml
     ```
 
-15. create the Gateway and GatewayClass resources
+15. install/update Traefik RBAC
 
     ```zsh
-    kubectl apply -f gateway/gateway.yaml
+    kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.1/docs/content/reference/dynamic-configuration/kubernetes-gateway-rbac.yml
     ```
 
-16. install Kong
+16. create the Gateway and GatewayClass resources
 
     ```zsh
-    helm repo add kong https://charts.konghq.com
+    helm repo add traefik https://traefik.github.io/charts
     helm repo update
+    kubectl create namespace traefik
+    helm upgrade --install --namespace traefik traefik traefik/traefik -f 05-values.yaml
     ```
 
-17. install Kong Ingress Controller and Kong Gateway
+17. populate $PROXY_IP for future commands:
 
     ```zsh
-    helm install kong kong/ingress -n kong --create-namespace
+    export PROXY_IP=$(kubectl get svc --namespace traefik traefik -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    echo $PROXY_IP
     ```
+
+18. verify the proxy IP
+
+    ```zsh
+    curl -i $PROXY_IP
+    ```
+
+    The results should look something like the following:
+
+    ```text
+    HTTP/1.1 404 Not Found
+    Content-Type: application/json; charset=utf-8
+    Connection: keep-alive
+    Content-Length: 48
+    X-Kong-Response-Latency: 0
+    Server: kong/3.0.0
+
+    {"message":"no Route matched with those values"}
+    ```
+
+19. deploy the X service
+
+    # TODO rewrite for our defined service.
+
+    ```zsh
+    kubectl create namespace whoami
+    kubectl apply -f 06-sample-service.yaml
+    ```
+
+20. create HTTPRoute for our deployed service
+
+    # TODO rewrite for our defined service.
+
+    ```zsh
+    kubectl apply -f 07-sample-httproute.yaml
+    ```
+
+21. test the routing rule
+
+    # TODO rewrite for our defined service.
+
+    ```zsh
+    curl $PROXY_IP
+    ```
+
+    The results should look like this:
+
+    ```text
+    Hostname: whoami-98d7579fb-qq2sj
+    IP: 127.0.0.1
+    IP: ::1
+    IP: 10.244.2.3
+    IP: fe80::1060:7eff:fe82:5954
+    RemoteAddr: 10.244.2.2:39066
+    GET / HTTP/1.1
+    Host: 194.1.2.101
+    User-Agent: curl/8.9.1
+    Accept: */*
+    Accept-Encoding: gzip
+    X-Forwarded-For: 194.1.2.3
+    X-Forwarded-Host: 194.1.2.101
+    X-Forwarded-Port: 80
+    X-Forwarded-Proto: http
+    X-Forwarded-Server: traefik-7c7587b647-vdmgt
+    X-Real-Ip: 194.1.2.3
+    ```
+
+## References
+
+- https://traefik.io/blog/getting-started-with-kubernetes-gateway-api-and-traefik
