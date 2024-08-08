@@ -1,4 +1,5 @@
 # TODO rewrite for our defined service.
+# Service to reach the application on the cluster
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,6 +23,7 @@ spec:
   selector:
     app: echo
 ---
+# Application to expose
 apiVersion: apps/v1
 kind: Deployment
 metadata:
