@@ -1,5 +1,7 @@
 # K8s Gateway API Using Kong
 
+The purpose of this example is to provide instructions for running the K8s Gatewey API using Kong.
+
 ## Software Requirements
 
 - Helm v3.15.2 or newer
@@ -8,7 +10,7 @@
 
 - OrbStack v1.6.2 or newer
 
-Note: This tutorial was updated on macOS 14.5. The below steps doesn't work with Docker Desktop v4.31.1
+Note: This tutorial was updated on macOS 14.6.1. The below steps doesn't work with Docker Desktop v4.31.1
 because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
 ## Tutorial Installation
