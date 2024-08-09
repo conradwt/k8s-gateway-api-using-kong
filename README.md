@@ -39,7 +39,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
     ```
 
-5.  locate the subnet
+5.  locate the K8s cluster's subnet
 
     ```zsh
     docker network inspect gateway-api-kong | jq '.[0].IPAM.Config[0]["Subnet"]'
