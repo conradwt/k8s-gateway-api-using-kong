@@ -6,7 +6,7 @@ The purpose of this example is to provide instructions for running the K8s Gatew
 
 - Helm v3.15.2 or newer
 
-- Kubernetes 1.31.0 or newer
+- Kubernetes v1.31.0 or newer
 
 - Minikube v1.33.1 or newer
 
