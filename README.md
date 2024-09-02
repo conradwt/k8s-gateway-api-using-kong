@@ -6,7 +6,7 @@ The purpose of this example is to provide instructions for running the K8s Gatew
 
 - Helm v3.15.2 or newer
 
-- Kubernetes 1.31.0 or newer
+- Kubernetes v1.31.0 or newer
 
 - Minikube v1.33.1 or newer
 
@@ -32,7 +32,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 3.  create Minikube cluster
 
     ```zsh
-    minikube start -p gateway-api-kong
+    minikube start -p gateway-api-kong --nodes=3 --kubernetes-version=v1.31.0
     ```
 
 4.  install MetalLB
@@ -249,3 +249,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
 - https://docs.konghq.com/kubernetes-ingress-controller/3.2.x/get-started
 - https://github.com/Kong/go-echo
+
+## Issues
+
+- https://github.com/metallb/metallb/issues/2486
