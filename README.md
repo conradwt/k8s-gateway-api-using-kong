@@ -223,7 +223,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     # TODO rewrite for our defined service.
 
     ```zsh
-    curl -i $PROXY_IP/echo
+    curl -i $GATEWAY_IP/echo
     ```
 
     The results should look like this:
@@ -243,6 +243,12 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     In namespace default.
     With IP address 10.1.0.237.
     ...
+    ```
+
+23. teardown the cluster
+
+    ```zsh
+    minikube delete --profile gateway-api-kong
     ```
 
 ## References
