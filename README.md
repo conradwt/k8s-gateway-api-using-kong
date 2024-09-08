@@ -176,17 +176,17 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     helm install kong kong/ingress -n kong --create-namespace
     ```
 
-18. populate $PROXY_IP for future commands:
+18. populate $GATEWAY_IP for future commands:
 
     ```zsh
-    export PROXY_IP=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    echo $PROXY_IP
+    export GATEWAY_IP=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    echo $GATEWAY_IP
     ```
 
-19. verify the proxy IP
+19. verify the gateway IP
 
     ```zsh
-    curl -i $PROXY_IP
+    curl -i $GATEWAY_IP
     ```
 
     The results should look something like the following:
@@ -249,7 +249,3 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
 - https://docs.konghq.com/kubernetes-ingress-controller/3.2.x/get-started
 - https://github.com/Kong/go-echo
-
-## Issues
-
-- https://github.com/metallb/metallb/issues/2486
