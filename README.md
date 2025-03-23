@@ -4,16 +4,15 @@ The purpose of this example is to provide instructions for running the K8s Gatew
 
 ## Software Requirements
 
-- Helm v3.16.2 or newer
+- Helm v3.17.2 or newer
 
-- Kubernetes v1.31.2 or newer
+- Kubernetes v1.32.3 or newer
 
-- Minikube v1.34.0 or newer
+- Minikube v1.35.0 or newer
 
-- OrbStack v1.7.5 or newer
+- OrbStack 1.10.3 or newer
 
-Note: This tutorial was updated on macOS 15.0.1. The below steps don't work with Docker Desktop v4.34.3
-because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
+Note: This tutorial was updated on macOS 15.3.2 (Sequoia). The below steps don't work with Docker Desktop v4.34.3 because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
 ## Tutorial Installation
 
@@ -32,13 +31,13 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 3.  create Minikube cluster
 
     ```zsh
-    minikube start -p gateway-api-kong --nodes=3 --kubernetes-version=v1.31.2
+    minikube start -p gateway-api-kong --nodes=3 --kubernetes-version=v1.32.3
     ```
 
 4.  install MetalLB
 
     ```zsh
-    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
     ```
 
 5.  locate the K8s cluster's subnet
