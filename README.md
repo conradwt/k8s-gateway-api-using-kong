@@ -6,13 +6,13 @@ The purpose of this example is to provide instructions for running the K8s Gatew
 
 - Helm v3.17.2 or newer
 
-- Kubernetes v1.32.3 or newer
+- Kubernetes v1.33.3 or newer
 
-- Minikube v1.35.0 or newer
+- Minikube v1.36.0 or newer
 
 - OrbStack 1.10.3 or newer
 
-Note: This tutorial was updated on macOS 15.3.2 (Sequoia). The below steps don't work with Docker Desktop v4.34.3 because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
+Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work with Docker Desktop v4.43.2 because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
 ## Tutorial Installation
 
@@ -31,7 +31,7 @@ Note: This tutorial was updated on macOS 15.3.2 (Sequoia). The below steps don't
 3.  create Minikube cluster
 
     ```zsh
-    minikube start -p gateway-api-kong --nodes=3 --kubernetes-version=v1.32.3
+    minikube start -p gateway-api-kong --nodes=3 --kubernetes-version=v1.33.3
     ```
 
 4.  install MetalLB
