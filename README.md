@@ -31,7 +31,7 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
 3.  create Minikube cluster
 
     ```zsh
-    minikube start -p gateway-api-kong --nodes=2 --kubernetes-version=v1.33.4
+    minikube start -p gateway-api-kong --nodes=3 --kubernetes-version=v1.33.4
     minikube profile gateway-api-kong
     ```
 
