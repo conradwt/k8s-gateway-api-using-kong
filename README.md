@@ -4,13 +4,13 @@ The purpose of this example is to provide instructions for running the K8s Gatew
 
 ## Software Requirements
 
-- Helm v3.17.2 or newer
+- Helm v3.19.0 or newer
 
-- Kubernetes v1.33.3 or newer
+- Kubernetes v1.33.4 or newer
 
 - Minikube v1.36.0 or newer
 
-- OrbStack 1.10.3 or newer
+- OrbStack 2.0.1 or newer
 
 Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work with Docker Desktop v4.43.2 because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
@@ -31,13 +31,30 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
 3.  create Minikube cluster
 
     ```zsh
-    minikube start -p gateway-api-kong --nodes=3 --kubernetes-version=v1.33.3
+    minikube start -p gateway-api-kong --nodes=2 --kubernetes-version=v1.33.4
+    minikube profile gateway-api-kong
     ```
 
 4.  install MetalLB
 
     ```zsh
-    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.2/config/manifests/metallb-native.yaml
+    ```
+
+4.  enable strict ARP mode
+
+    ```zsh
+    # see what changes would be made, returns nonzero returncode if different
+    kubectl get configmap kube-proxy -n kube-system -o yaml | \
+    sed -e "s/strictARP: false/strictARP: true/" | \
+    kubectl diff -f - -n kube-system
+    ```
+
+    ```zsh
+    # actually apply the changes, returns nonzero returncode on errors only
+    kubectl get configmap kube-proxy -n kube-system -o yaml | \
+    sed -e "s/strictARP: false/strictARP: true/" | \
+    kubectl apply -f - -n kube-system
     ```
 
 5.  locate the K8s cluster's subnet
@@ -153,7 +170,7 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
 14. install the Gateway API CRDs
 
     ```zsh
-    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
     ```
 
 15. create the Gateway and GatewayClass resources
