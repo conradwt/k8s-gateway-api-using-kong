@@ -4,13 +4,13 @@ The purpose of this example is to provide instructions for running the K8s Gatew
 
 ## Software Requirements
 
-- Helm v3.17.2 or newer
+- Helm v3.19.0 or newer
 
-- Kubernetes v1.33.3 or newer
+- Kubernetes v1.33.4 or newer
 
 - Minikube v1.36.0 or newer
 
-- OrbStack 1.10.3 or newer
+- OrbStack 2.0.1 or newer
 
 Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work with Docker Desktop v4.43.2 because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
