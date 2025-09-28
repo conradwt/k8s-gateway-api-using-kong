@@ -35,12 +35,6 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     minikube profile gateway-api-kong
     ```
 
-4.  install MetalLB
-
-    ```zsh
-    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.2/config/manifests/metallb-native.yaml
-    ```
-
 4.  enable strict ARP mode
 
     ```zsh
@@ -57,7 +51,13 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     kubectl apply -f - -n kube-system
     ```
 
-5.  locate the K8s cluster's subnet
+5.  install MetalLB
+
+    ```zsh
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.2/config/manifests/metallb-native.yaml
+    ```
+
+6.  locate the K8s cluster's subnet
 
     ```zsh
     docker network inspect gateway-api-kong | jq '.[0].IPAM.Config[0]["Subnet"]'
@@ -66,7 +66,7 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     The results should look something like the following:
 
     ```json
-    "194.1.2.0/24",
+    "194.1.2.0/24"
     ```
 
     Then one can use an IP address range like the following:
@@ -75,13 +75,13 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     194.1.2.100-194.1.2.110
     ```
 
-6.  create the `01-metallb-address-pool.yaml` file
+7.  create the `01-metallb-address-pool.yaml` file
 
     ```zsh
     cp 01-metallb-address-pool.yaml.example 01-metallb-address-pool.yaml
     ```
 
-7.  update the `01-metallb-address-pool.yaml`
+8.  update the `01-metallb-address-pool.yaml`
 
     ```yaml
     apiVersion: metallb.io/v1beta1
@@ -96,31 +96,31 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
 
     Note: The IP range needs to be in the same range as the K8s cluster, `gateway-api-kong`.
 
-8.  apply the address pool manifest
+9.  apply the address pool manifest
 
     ```zsh
     kubectl apply -f 01-metallb-address-pool.yaml
     ```
 
-9.  apply Layer 2 advertisement manifest
+10. apply Layer 2 advertisement manifest
 
     ```zsh
     kubectl apply -f 02-metallb-advertise.yaml
     ```
 
-10. apply deployment manifest
-
-    ```zsh
-    kubectl apply -f 03-nginx-deployment.yaml
-    ```
-
 11. apply service manifest
 
     ```zsh
-    kubectl apply -f 04-nginx-service-loadbalancer.yaml
+    kubectl apply -f 03-nginx-service-loadbalancer.yaml
     ```
 
-12. check that your service has an IP address
+12. apply deployment manifest
+
+    ```zsh
+    kubectl apply -f 04-nginx-deployment.yaml
+    ```
+
+13. check that your service has an IP address
 
     ```zsh
     kubectl get svc nginx-service
@@ -133,7 +133,7 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     nginx-service   LoadBalancer   10.106.207.172   194.1.2.100   80:32000/TCP   17h
     ```
 
-13. test connectivity to `nginx-service` endpoint via external IP address
+14. test connectivity to `nginx-service` endpoint via external IP address
 
     ```zsh
     curl 194.1.2.100
@@ -167,39 +167,39 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     </html>
     ```
 
-14. install the Gateway API CRDs
+15. install the Gateway API CRDs
 
     ```zsh
     kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
     ```
 
-15. create the Gateway and GatewayClass resources
+16. create the Gateway and GatewayClass resources
 
     ```zsh
     kubectl apply -f 05-gateway.yaml
     ```
 
-16. install Kong
+17. install Kong
 
     ```zsh
     helm repo add kong https://charts.konghq.com
     helm repo update
     ```
 
-17. install Kong Ingress Controller and Kong Gateway
+18. install Kong Ingress Controller and Kong Gateway
 
     ```zsh
     helm install kong kong/ingress -n kong --create-namespace
     ```
 
-18. populate $GATEWAY_IP for future commands:
+19. populate $GATEWAY_IP for future commands:
 
     ```zsh
     export GATEWAY_IP=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     echo $GATEWAY_IP
     ```
 
-19. verify the gateway IP
+20. verify the gateway IP
 
     ```zsh
     curl -i $GATEWAY_IP
@@ -218,7 +218,7 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     {"message":"no Route matched with those values"}
     ```
 
-20. deploy the X service
+21. deploy the X service
 
     # TODO rewrite for our defined service.
 
@@ -226,7 +226,7 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     kubectl apply -f 06-sample-service.yaml
     ```
 
-21. create HTTPRoute for our deployed service
+22. create HTTPRoute for our deployed service
 
     # TODO rewrite for our defined service.
 
@@ -234,7 +234,7 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     kubectl apply -f 07-sample-httproute.yaml
     ```
 
-22. test the routing rule
+23. test the routing rule
 
     # TODO rewrite for our defined service.
 
@@ -261,7 +261,7 @@ Note: This tutorial was updated on macOS 26 (Tahoe). The below steps don't work 
     ...
     ```
 
-23. teardown the cluster
+24. teardown the cluster
 
     ```zsh
     minikube delete --profile gateway-api-kong

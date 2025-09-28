@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: nginx-service
 spec:
+  type: LoadBalancer
   selector:
     app: nginx
   ports:
     - protocol: TCP
-      # container
-      targetPort: 80
-      # service
+      # port of the service
       port: 80
-  type: LoadBalancer
+      # port of the pod
+      targetPort: 80
