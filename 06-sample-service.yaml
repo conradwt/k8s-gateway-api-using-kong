@@ -1,11 +1,10 @@
-# TODO rewrite for our defined service.
-# Service to reach the application on the cluster
+---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app: echo
-  name: echo
+    name: echo
 spec:
   ports:
     - port: 1025
@@ -23,13 +22,12 @@ spec:
   selector:
     app: echo
 ---
-# Application to expose
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     app: echo
-  name: echo
+    name: echo
 spec:
   replicas: 1
   selector:
